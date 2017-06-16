@@ -7,7 +7,7 @@ var playState = {
   create: function() {
     // display tiles for maps
     game.stage.backgroundColor = "#42b3f4";
-    game.world.setBounds(0, 0, 1920, 1000)
+    game.world.setBounds(0, 0, 1920, 480)
 
     var map = game.add.tilemap('level');
     map.addTilesetImage('background', 'background');
@@ -20,7 +20,7 @@ var playState = {
     map.setCollisionBetween(1, 2000, true, 'Foreground');
 
     //setup player
-    player = game.add.sprite(410,700, 'player');
+    player = game.add.sprite(410,200, 'player');
     game.add.existing(player);
     player.animations.add('player_idle', Phaser.Animation.generateFrameNames('sprite', 1, 3), 2);
     player.animations.add('player_walking', Phaser.Animation.generateFrameNames('sprite', 4, 6), 6);
