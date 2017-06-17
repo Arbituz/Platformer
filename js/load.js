@@ -14,6 +14,8 @@ var loadState = {
     game.load.image('foreground', 'assets/sprites/world.png');
     game.load.atlas('player', 'assets/sprites/player.png', 'assets/sprites/player.json');
     game.load.image('background', 'assets/sprites/sky.png');
+    game.load.spritesheet('coin', 'assets/sprites/coin.png', 32, 32);
+    game.load.image('titlePage', 'assets/sprites/title.png');
   },
   create: function() {
     game.state.start('title');
