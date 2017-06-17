@@ -25,14 +25,14 @@ var playState = {
     coins.allowGravity = false;
 
     //convert all of the Tiled objects with the ID of 23 into sprites within the coins group
-    map.createFromObjects('Collectables', 105, 'coin', 0, true, false, coins);
+    map.createFromObjects('Collectables', 5, 'coin', 0, true, false, coins);
 
     //add animations to all of the coin sprites
     coins.callAll('animations.add', 'animations', 'spin', [0, 1], 10, true);
     coins.callAll('animations.play', 'animations', 'spin');
 
     //setup player
-    player = game.add.sprite(410,200, 'player');
+    player = game.add.sprite(50,350, 'player');
     game.add.existing(player);
     player.animations.add('player_idle', Phaser.Animation.generateFrameNames('sprite', 1, 3), 2);
     player.animations.add('player_walking', Phaser.Animation.generateFrameNames('sprite', 4, 6), 6);
@@ -40,10 +40,17 @@ var playState = {
     player.body.collideWorldBounds = true;
     player.anchor.setTo(.05, .05);
     game.camera.follow(player);
+    this.score = 0;
 
 
     //enable gravity
     game.physics.arcade.gravity.y = 1500;
+
+    //print score to screen
+    this.currentScore = game.add.text(20, 20, 'Score: ' + this.score, {
+        font: '14px Arial', fill: '#ffffff'
+      });
+    this.currentScore.fixedToCamera = true;
 
     //load in key inputs
     cursors = game.input.keyboard.createCursorKeys();
@@ -54,10 +61,12 @@ var playState = {
 
   update: function() {
 
+    //collisions
     game.physics.arcade.collide(player, foreground);
     game.physics.arcade.collide(coins, foreground);
     game.physics.arcade.overlap(player, coins, collectCoin, null, this);
 
+    //reset player velocity
     player.body.velocity.x = 0;
 
     //react to player input and play correct animation
@@ -88,6 +97,8 @@ var playState = {
 
     function collectCoin(player, coins) {
       coins.kill();
+      this.score += 1;
+      this.currentScore.setText("Score: " + this.score);
     }
 
    }
