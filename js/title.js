@@ -2,15 +2,15 @@
 var titleState = {
   create: function() {
     game.add.tileSprite(0, 0, 800, 480, 'titlePage');
-    var nameLabel = game.add.text(325,390, 'Click anywhere to start', {
+    var nameLabel = game.add.text(325,390, 'Press SPACE to continue...', {
         font: '14px Arial', fill: '#000000'
       });
-      game.input.activePointer.capture = true;
+    spaceBar = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 
     },
 
     update: function() {
-    if (game.input.activePointer.isDown) {
+    if (spaceBar.isDown) {
         game.state.start('play')
      }
     }
