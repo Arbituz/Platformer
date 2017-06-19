@@ -21,6 +21,13 @@ var loadState = {
     game.load.spritesheet('coinBox', 'assets/sprites/coinBox.png', 32, 32);
     game.load.image('brick', 'assets/sprites/brick.png');
     game.load.spritesheet('coinHit', 'assets/sprites/coinHit.png', 32, 64);
+
+    //****** Load audio assets ******//
+    game.load.audio('8bitbeat', 'assets/music/8bitbeat.wav');
+    game.load.audio('coinHit', 'assets/sounds/coinhit.wav');
+    game.load.audio('jump', 'assets/sounds/jump.wav');
+    game.load.audio('coinPickup', 'assets/sounds/coinPickup.wav');
+    game.load.audio('enemyKill', 'assets/sounds/enemyKill.wav');
   },
   create: function() {
     game.state.start('title');

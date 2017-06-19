@@ -11,6 +11,17 @@ var playState = {
     game.physics.startSystem(Phaser.Physics.ARCADE);
     game.physics.arcade.gravity.y = 1500;
 
+    //select and play bgmusic
+    music = game.add.audio('8bitbeat');
+    music.loop = true;
+    music.play();
+
+    //assign variables to sfx
+    sfx_coinHit = game.add.audio('coinHit');
+    sfx_jump = game.add.audio('jump');
+    sfx_coinPickup = game.add.audio('coinPickup');
+    sfx_enemyKill = game.add.audio('enemyKill');
+
     // display tiles for maps
     game.stage.backgroundColor = "#42b3f4";
     game.world.setBounds(0, 0, 1920, 480);
@@ -48,8 +59,8 @@ var playState = {
     player = game.add.sprite(50,350, 'player');
     game.add.existing(player);
     game.physics.enable(player, Phaser.Physics.ARCADE);
+    player.anchor.setTo(.5, .5);
     player.body.collideWorldBounds = true;
-    player.anchor.setTo(.5, 0);
     game.camera.follow(player);
     this.score = 0;
 
@@ -69,8 +80,6 @@ var playState = {
     coins.callAll('animations.play', 'animations', 'spin');
     enemies.callAll('animations.add', 'animations', 'enemy_walk', [0, 1 ,2], 4, true);
     enemies.callAll('animations.play', 'animations', 'enemy_walk');
-    //player.animations.add('player_idle', Phaser.Animation.generateFrameNames('sprite', 1, 3), 2);
-    //player.animations.add('player_walking', Phaser.Animation.generateFrameNames('sprite', 4, 6), 6);
 
     //make enemies move
     enemies.forEach(function(enemy){
@@ -86,7 +95,6 @@ var playState = {
     coinBoxes.setAll('body.allowGravity', false);
     coinBoxes.setAll('body.immovable', true);
 
-
   },
 
   update: function() {
@@ -95,7 +103,7 @@ var playState = {
     game.physics.arcade.collide(enemies, foreground);
     game.physics.arcade.collide(player, foreground);
     game.physics.arcade.collide(coins, foreground);
-    game.physics.arcade.collide(player, enemies, enemyCollide, null, this);
+    game.physics.arcade.overlap(player, enemies, enemyCollide, null, this);
     game.physics.arcade.overlap(player, coins, collectCoin, null, this);
     game.physics.arcade.collide(player, coinBoxes, coinBoxCollide, null, this);
 
@@ -106,38 +114,32 @@ var playState = {
     if(keyLeft.isDown) {
       player.body.velocity.x = -250;
       player.scale.x = -1;
-    //  if(!player.animations.play('player_walking')) {
-      //  player.animations.play('player_walking');
-      //}
     }
     else if(keyRight.isDown) {
       player.body.velocity.x = 250;
       player.scale.x = 1;
-      //if(!player.animations.play('player_walking')) {
-        //player.animations.play('player_walking');
-      //}
     }
-    //if(player.body.velocity.x == 0) {
-      //player.animations.play('player_idle');
-    //}
 
     if(jumpButton.isDown && player.body.onFloor()) {
       playerJump();
     }
 
     function playerJump() {
+      sfx_jump.play();
       player.body.velocity.y = -700;
     }
 
     function collectCoin(player, coins) {
+      sfx_coinPickup.play();
       coins.kill();
       this.score += 1;
       this.currentScore.setText("Score: " + this.score);
     }
 
     function enemyCollide(player, enemies) {
-      if (player.body.y +50 < enemies.body.y) {
-        enemies.kill();
+      if (player.body.touching.down) {
+        sfx_enemyKill.play();
+        enemies.destroy();
         player.body.velocity.y = - 400;
         newEnemy = game.add.sprite(enemies.x, enemies.y, 'enemy');
         newEnemy.animations.add('enemy_kill', [3, 3, 4, 3], 6, true);
@@ -146,13 +148,19 @@ var playState = {
         this.currentScore.setText("Score: " + this.score);
       }
       else {
-        player.kill();
+          newPlayer = game.add.sprite(player.x, player.y, 'player');
+          player.kill();
+          game.physics.enable(newPlayer, Phaser.Physics.ARCADE);
+          newPlayer.enableBody = true;
+          newPlayer.body.velocity.y = - 500;
+          newPlayer.body.gravity.y = 1500;
+        }
       }
-    }
 
     function coinBoxCollide(player, coinBoxes) {
-      if (player.body.y > coinBoxes.body.y) {
+      if(player.body.touching.up) {
         if (!coinBoxes.frame == 1) {
+          sfx_coinHit.play();
           coinBoxes.frame = 1;
           this.score += 1;
           coinHit = game.add.sprite(coinBoxes.x, coinBoxes.y - 70, 'coinHit');
@@ -161,6 +169,5 @@ var playState = {
         }
       }
     }
-
   }
 };
